@@ -1,73 +1,88 @@
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <sstream>
 #include <string>
 #include <ctime>
-#include <iomanip>
+
 #include <planner.hpp>
+
+using namespace std;
 
 int main() {
     Planner planner;
-    std::ifstream file("D:/PROGRAMMING/_DSA/Lab2/project/data/flight-data.csv");
-    std::string line;
-    std::getline(file, line);  // Skip the header line
+    ifstream file("D:/_DSA/Lab2/project/data/flight-data.csv");
+    string line;
+    getline(file, line);  
 
-    while (std::getline(file, line)) {
-        std::istringstream ss(line);
-        std::string field;
+    while (getline(file, line)) {
+        istringstream ss(line);
+        string field;
 
-        std::getline(ss, field, ',');  // Skip the flight ID
-        std::getline(ss, field, ',');  // Skip the departure date
-        std::getline(ss, field, ',');  // Skip the Intl/Dome field
-        std::getline(ss, field, ',');  // Skip the flight NO.
+        getline(ss, field, ','); 
+        int flight_id   = stoi(field);
 
-        std::getline(ss, field, ',');
-        int departure_airport = std::stoi(field);
+        getline(ss, field, ','); 
+        getline(ss, field, ','); 
+        getline(ss, field, ',');  
 
-        std::getline(ss, field, ',');
-        int arrival_airport = std::stoi(field);
+        getline(ss, field, ',');
+        int departure_airport = stoi(field);
 
-        std::getline(ss, field, ',');
-        std::tm departure_time = {};
-        std::istringstream dt_ss(field);
-        dt_ss >> std::get_time(&departure_time, "%m/%d/%Y %H:%M");
+        getline(ss, field, ',');
+        int arrival_airport = stoi(field);
 
-        std::getline(ss, field, ',');
-        std::tm arrival_time = {};
-        std::istringstream at_ss(field);
-        at_ss >> std::get_time(&arrival_time, "%m/%d/%Y %H:%M");
+        getline(ss, field, ',');
+        tm departure_time = {};
+        istringstream dt_ss(field);
+        dt_ss >> get_time(&departure_time, "%m/%d/%Y %H:%M");
 
-        std::getline(ss, field, ',');
-        std::getline(ss, field, ',');
+        getline(ss, field, ',');
+        tm arrival_time = {};
+        istringstream at_ss(field);
+        at_ss >> get_time(&arrival_time, "%m/%d/%Y %H:%M");
 
-        std::getline(ss, field, ',');
-        int cost = std::stoi(field);
+        getline(ss, field, ',');
+        getline(ss, field, ',');
 
-        Flight flight = {arrival_airport, departure_time, arrival_time, cost};
-        planner.airports[departure_airport].flights.push_back(flight);
+        getline(ss, field, ',');
+        int cost = stoi(field);
+
+        Trip trip = {flight_id, arrival_airport, departure_time, arrival_time, cost};
+        planner.stations[departure_airport].journeys.push_back(trip);
+        
     }
     planner.sortFlights();
-    // 以下为每个问题的测试样例
-    std::cout << "#Question 1" << std::endl;
+
+
+    cout << "***Question 1***" << endl;
     planner.query_dfs(48, "5/5/2017 12:20");
     planner.query_bfs(48, "5/5/2017 12:20");
 
-    std::cout << "#Question 2" << std::endl;
-    std::cout << "case 1:" << std::endl;
-    planner.query_connectivity(48, 50);
-    std::cout << "case 2:" << std::endl;
-    planner.query_connectivity(49, 4);
-    std::cout << "case 3:" << std::endl;
+    cout << "***Question 2***" << endl;
+    cout << "Output_1:" << endl;
+    planner.query_connectivity(20, 16);
+    cout << "Output_2:" << endl;
+    planner.query_connectivity(18, 5);
+    cout << "Output_3:" << endl;
     planner.query_connectivity(1, 4);
 
-    std::cout << "#Question 3" << std::endl;
-    planner.query_shortest_path(48, 50, "5/5/2017 12:20", "5/5/2017 15:30");
+    cout << "***Question 3***" << endl;
+    planner.query_shortest_path(39, 10, "5/6/2017 0:00", "5/8/2017 0:00");
 
-    std::cout << "#Question 4" << std::endl;
-    planner.query_minimum_cost_path(49, 4, "5/5/2017 12:20", "5/6/2017 1:50");
+    cout << "***Question 4***" << endl;
+    cout << "Output_1:" << endl;
+    planner.query_minimum_cost_path(28, 74, "5/5/2017 0:00", "5/9/2017 23:59");
+    cout << "Output_2:" << endl;
+    planner.query_minimum_cost_path(17, 52, "5/7/2017 0:00", "5/9/2017 23:59");
+    cout << "Output_3:" << endl;
+    planner.query_minimum_cost_path(18, 52, "5/5/2017 0:00", "5/7/2017 0:00");
+    cout << "Output_4:" << endl;
+    planner.query_minimum_cost_path(80, 52, "5/5/2017 0:00", "5/7/2017 0:00");
 
-    std::cout << "#Question 5" << std::endl;
-    AllPathsResult result = planner.query_all_paths(50, 32, "5/5/2017 12:20", "5/9/2017 15:30");
-    result.print(50);
+    cout << "***Question 5***" << endl;
+    planner.query_all_paths(20, 16, "5/4/2017 20:10", "5/7/2017 23:30");
+ 
+
     return 0;
 }
